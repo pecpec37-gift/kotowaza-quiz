@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📜 故事・ことわざクイズ道場</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&family=Shippori+Mincho:wght@600;800&family=Noto+Sans+JP:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://pecpec37-gift.github.io/portal/stamp.js"></script>
+<style>
+:root{
+  --bg:#13110d;--bg2:#1b1813;--surface:#252019;--surface2:#322b20;
+  --border:rgba(201,162,39,0.20);
+  --red:#a0341f;--red2:#c0392b;--red3:#e8a99c;
+  --gold:#9a7b1f;--gold2:#c9a227;--gold3:#ecc94b;
+  --crimson:#d9533f;
+  --green:#3fae7a;--blue:#5aa9d6;
+  --text:#f5efe2;--text2:rgba(245,239,226,0.72);--text3:rgba(245,239,226,0.42);
+  --radius:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden;background:var(--bg);}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;width:100%;max-width:100%;position:relative;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 12% 8%,rgba(201,162,39,0.10) 0%,transparent 52%),radial-gradient(ellipse at 88% 92%,rgba(192,57,43,0.10) 0%,transparent 52%);pointer-events:none;z-index:0;}
+.screen{display:none;position:relative;z-index:1;}.screen.active{display:block;}
+#screen-top{min-height:100vh;}
+.top-hero{background:linear-gradient(160deg,#241c12 0%,#13110d 55%,#0b0906 100%);padding:52px 24px 44px;text-align:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.top-hero::before{content:'諺';position:absolute;right:-6px;bottom:-34px;font-family:'Shippori Mincho',serif;font-size:230px;font-weight:800;opacity:0.045;pointer-events:none;color:var(--gold3);}
+.top-hero::after{content:'故';position:absolute;left:8px;top:0px;font-family:'Shippori Mincho',serif;font-size:140px;font-weight:800;opacity:0.045;pointer-events:none;color:var(--red3);}
+.top-eyebrow{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0.22em;color:var(--gold2);text-transform:uppercase;margin-bottom:12px;}
+.top-title{font-family:'Shippori Mincho',serif;font-weight:800;font-size:clamp(30px,6.5vw,56px);line-height:1.12;color:var(--text);margin-bottom:8px;letter-spacing:0.04em;}
+.top-title span{color:var(--gold3);}
+.top-sub{font-size:13px;color:var(--text2);letter-spacing:0.06em;margin-bottom:28px;}
+.top-rule{display:inline-block;background:rgba(192,57,43,0.07);border:1px solid rgba(201,162,39,0.22);border-radius:6px;padding:14px 20px;text-align:left;font-size:12px;line-height:2;color:var(--text2);}
+.top-rule strong{color:var(--gold3);}
+.genres-wrap{max-width:920px;margin:0 auto;padding:32px 20px 20px;}
+.genres-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0.2em;color:var(--text3);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.genres-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.genres-hint{font-size:12px;color:var(--gold3);background:rgba(201,162,39,0.08);border:1px solid rgba(201,162,39,0.22);border-radius:4px;padding:8px 14px;margin-bottom:20px;text-align:center;letter-spacing:0.04em;}
+.genres-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:24px;}
+.genre-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;cursor:pointer;transition:transform 0.12s,box-shadow 0.12s,border-color 0.12s;position:relative;overflow:hidden;}
+.genre-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,162,39,0.08),transparent);opacity:0;transition:opacity 0.15s;}
+.genre-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,0.5),0 0 20px rgba(201,162,39,0.12);border-color:rgba(201,162,39,0.5);}
+.genre-card:hover::before{opacity:1;}
+.genre-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:6px 6px 0 0;}
+.genre-icon{font-size:30px;line-height:1;margin-bottom:8px;display:block;}
+.genre-name{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:16px;margin-bottom:4px;color:var(--text);}
+.genre-desc{font-size:11px;color:var(--text3);margin-bottom:4px;line-height:1.6;}
+.genre-count{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.1em;}
+.genre-start{position:absolute;top:14px;right:14px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--gold2);opacity:0;transition:opacity 0.15s;}
+.genre-card:hover .genre-start{opacity:1;}
+.ranking-btn-wrap{text-align:center;padding:8px 0 36px;}
+.ranking-btn{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:0.12em;padding:10px 24px;background:none;border:1px solid var(--border);color:var(--text3);border-radius:3px;cursor:pointer;transition:all 0.15s;}
+.ranking-btn:hover{border-color:var(--gold3);color:var(--gold3);}
+#screen-intro{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;}
+#screen-intro.active{display:flex;}
+.intro-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:32px 28px;width:100%;max-width:420px;text-align:center;}
+.intro-icon{font-size:52px;margin-bottom:10px;display:block;}
+.intro-name{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:24px;margin-bottom:4px;color:var(--gold3);}
+.intro-desc{font-size:12px;color:var(--text3);margin-bottom:20px;line-height:1.7;}
+.intro-rule{font-size:12px;line-height:1.9;color:var(--text2);text-align:left;background:rgba(192,57,43,0.06);border-radius:6px;padding:12px 14px;margin-bottom:20px;}
+.intro-rule strong{color:var(--gold3);}
+.name-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;margin-bottom:6px;text-align:left;}
+.name-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 14px;color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:14px;margin-bottom:16px;outline:none;transition:border-color 0.15s;}
+.name-input:focus{border-color:var(--red2);}
+.name-input::placeholder{color:var(--text3);}
+.start-btn{width:100%;padding:14px;background:var(--red2);color:#fff;font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:16px;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s,transform 0.1s;letter-spacing:0.04em;}
+.start-btn:hover{background:var(--crimson);}
+.start-btn:active{transform:scale(0.98);}
+.back-link{margin-top:14px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);cursor:pointer;transition:color 0.15s;background:none;border:none;}
+.back-link:hover{color:var(--text);}
+#screen-quiz{min-height:100vh;}
+.quiz-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:10;}
+.quiz-progress{flex:1;height:3px;background:rgba(201,162,39,0.15);border-radius:2px;overflow:hidden;min-width:30px;}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,var(--red2),var(--gold2));border-radius:2px;transition:width 0.3s;}
+.quiz-qnum{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);white-space:nowrap;letter-spacing:0.08em;}
+.quiz-score{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--gold3);white-space:nowrap;}
+.quiz-timer-wrap{display:flex;align-items:center;gap:5px;}
+.quiz-timer{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:22px;color:var(--gold3);min-width:40px;text-align:right;transition:color 0.3s;}
+.quiz-timer.danger{color:#e0524a;animation:pulse 0.5s infinite alternate;}
+@keyframes pulse{from{opacity:1;}to{opacity:0.5;}}
+.quiz-timer-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;}
+.quiz-body{max-width:640px;margin:0 auto;padding:28px 20px 40px;width:100%;}
+#quiz-choices{max-width:100%;}
+.quiz-type-badge{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.16em;padding:3px 10px;border-radius:3px;display:inline-block;margin-bottom:14px;text-transform:uppercase;}
+.quiz-type-badge.type-4{background:rgba(192,57,43,0.16);color:var(--red3);}
+.quiz-type-badge.type-ox{background:rgba(201,162,39,0.16);color:var(--gold3);}
+.quiz-q{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:700;font-size:clamp(16px,4vw,20px);line-height:1.7;margin-bottom:22px;color:var(--text);max-width:100%;overflow-wrap:break-word;word-break:break-word;line-break:strict;}
+.quiz-q .koto{font-family:'Shippori Mincho',serif;font-weight:800;color:var(--gold3);letter-spacing:0.1em;}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.choice-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;text-align:left;font-family:'Noto Sans JP',sans-serif;font-size:15px;color:var(--text);cursor:pointer;transition:all 0.12s;display:flex;align-items:center;gap:12px;width:100%;min-width:0;overflow-wrap:break-word;word-break:break-word;}
+.choice-btn:hover:not(:disabled){background:var(--surface2);border-color:rgba(201,162,39,0.5);transform:translateX(4px);}
+.choice-btn:disabled{cursor:default;}
+.choice-btn.correct{background:rgba(63,174,122,0.16);border-color:#3fae7a;color:#7ed3a8;}
+.choice-btn.wrong{background:rgba(224,82,74,0.14);border-color:#e0524a;color:#f0958e;}
+.choice-label{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);min-width:20px;}
+.ox-choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.ox-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 16px;font-size:38px;cursor:pointer;transition:all 0.12s;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;min-width:0;}
+.ox-btn span{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.1em;}
+.ox-btn:hover:not(:disabled){transform:scale(1.03);border-color:rgba(201,162,39,0.5);}
+.ox-btn:disabled{cursor:default;}
+.ox-btn.correct{background:rgba(63,174,122,0.16);border-color:#3fae7a;}
+.ox-btn.wrong{background:rgba(224,82,74,0.14);border-color:#e0524a;}
+.feedback-bar{margin-top:14px;padding:12px 16px;border-radius:6px;font-size:13px;font-weight:700;opacity:0;transition:opacity 0.2s;min-height:44px;}
+.feedback-bar.show{opacity:1;}
+.feedback-bar.ok{background:rgba(63,174,122,0.1);color:#7ed3a8;border:1px solid rgba(63,174,122,0.28);}
+.feedback-bar.ng{background:rgba(224,82,74,0.08);color:#f0958e;border:1px solid rgba(224,82,74,0.22);}
+.feedback-mean{display:block;margin-top:6px;font-weight:400;font-size:12px;color:var(--text2);line-height:1.6;}
+.next-btn{margin-top:14px;width:100%;padding:12px;background:var(--red2);color:#fff;font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:15px;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s;display:none;}
+.next-btn.show{display:block;}
+.next-btn:hover{background:var(--crimson);}
+#screen-result{min-height:100vh;display:none;flex-direction:column;align-items:center;padding:40px 20px 60px;}
+#screen-result.active{display:flex;}
+.result-box{width:100%;max-width:520px;}
+.result-genre{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0.2em;color:var(--text3);text-transform:uppercase;margin-bottom:8px;text-align:center;}
+.result-score-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px;text-align:center;margin-bottom:20px;}
+.result-medal{font-size:48px;margin-bottom:8px;display:block;}
+.result-score{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:64px;line-height:1;color:var(--gold3);}
+.result-score-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0.16em;color:var(--text3);margin-bottom:16px;text-transform:uppercase;}
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;}
+.result-stat{background:var(--bg2);border-radius:6px;padding:12px 8px;text-align:center;}
+.result-stat-val{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:24px;color:var(--gold3);}
+.result-stat-val.green{color:#7ed3a8;}
+.result-stat-val.gold{color:var(--gold3);}
+.result-stat-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text3);margin-top:2px;}
+.result-actions{display:flex;gap:10px;margin-bottom:24px;}
+.result-btn{flex:1;padding:12px;font-family:'Zen Kaku Gothic New',sans-serif;font-weight:700;font-size:14px;border-radius:6px;cursor:pointer;transition:all 0.15s;}
+.result-btn-primary{background:var(--red2);color:#fff;border:none;}
+.result-btn-primary:hover{background:var(--crimson);}
+.result-btn-secondary{background:none;color:var(--text2);border:1px solid var(--border);}
+.result-btn-secondary:hover{border-color:var(--gold2);color:var(--gold2);}
+.wrong-section{width:100%;max-width:520px;}
+.wrong-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.wrong-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:10px;}
+.wrong-item-num{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.14em;color:var(--text3);margin-bottom:6px;}
+.wrong-item-q{font-size:14px;line-height:1.6;color:var(--text);margin-bottom:10px;font-weight:700;}
+.wrong-item-q .koto{font-family:'Shippori Mincho',serif;color:var(--gold3);letter-spacing:0.08em;}
+.wrong-item-ans{display:flex;align-items:flex-start;gap:8px;font-size:13px;}
+.wrong-item-ans-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--green);background:rgba(63,174,122,0.1);padding:2px 7px;border-radius:2px;white-space:nowrap;margin-top:1px;}
+.wrong-item-ans-text{color:#7ed3a8;line-height:1.5;}
+.wrong-item-mean{margin-top:8px;font-size:12px;color:var(--text2);line-height:1.6;border-left:2px solid var(--border);padding-left:10px;}
+.portal-back{display:block;text-align:center;margin-top:28px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:0.1em;color:var(--text3);text-decoration:none;padding:10px 20px;border:1px solid var(--border);border-radius:3px;transition:all 0.15s;}
+.portal-back:hover{border-color:var(--gold2);color:var(--gold2);}
+#screen-ranking{min-height:100vh;padding:40px 20px 60px;}
+.ranking-wrap{max-width:600px;margin:0 auto;}
+.ranking-top{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+.ranking-title{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:22px;color:var(--gold3);flex:1;}
+.ranking-back{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);background:none;border:1px solid var(--border);border-radius:3px;padding:6px 14px;cursor:pointer;transition:all 0.15s;}
+.ranking-back:hover{border-color:var(--gold3);color:var(--gold3);}
+.ranking-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-bottom:20px;border-bottom:1px solid var(--border);}
+.ranking-tabs::-webkit-scrollbar{display:none;}
+.ranking-tab{flex-shrink:0;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0.1em;padding:10px 12px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text3);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.ranking-tab.active{color:var(--red3);border-bottom-color:var(--red2);}
+.ranking-list{display:flex;flex-direction:column;gap:6px;}
+.ranking-empty{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);text-align:center;padding:32px;letter-spacing:0.1em;}
+.ranking-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 16px;}
+.ranking-row.top1{border-color:rgba(201,162,39,0.5);background:rgba(201,162,39,0.05);}
+.ranking-row.top2{border-color:rgba(200,200,200,0.25);}
+.ranking-row.top3{border-color:rgba(180,100,30,0.3);}
+.ranking-pos{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:18px;min-width:28px;color:var(--text3);}
+.ranking-pos.gold{color:#c9a227;}.ranking-pos.silver{color:#9ca3af;}.ranking-pos.bronze{color:#b45309;}
+.ranking-name{flex:1;font-size:14px;font-weight:700;color:var(--text);}
+.ranking-score{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:20px;color:var(--gold3);}
+.ranking-date{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);margin-left:6px;}
+.ranking-del{font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 8px;margin-top:12px;font-family:'Share Tech Mono',monospace;letter-spacing:0.08em;transition:color 0.15s;}
+.ranking-del:hover{color:#e0524a;}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg2);color:var(--gold3);font-family:'Share Tech Mono',monospace;font-size:12px;padding:10px 20px;border-radius:6px;border:1px solid var(--gold2);z-index:9999;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.portal-fixed-btn{position:fixed;bottom:20px;left:20px;z-index:9999;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:rgba(19,17,13,0.92);color:var(--gold3);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:0.08em;border-radius:4px;border:1px solid rgba(201,162,39,0.35);text-decoration:none;backdrop-filter:blur(6px);box-shadow:0 4px 16px rgba(0,0,0,0.5);transition:all 0.15s;white-space:nowrap;}
+.portal-fixed-btn:hover{background:rgba(19,17,13,0.98);border-color:rgba(201,162,39,0.7);transform:translateY(-1px);}
+@media(max-width:480px){.genres-grid{grid-template-columns:1fr 1fr;}.result-actions{flex-direction:column;}.portal-fixed-btn{bottom:14px;left:14px;padding:8px 14px;font-size:11px;}.quiz-header{padding:12px 14px;gap:10px;}.quiz-body{padding:24px 16px 40px;}.quiz-timer{font-size:20px;}}
+@media(max-width:360px){.genres-grid{grid-template-columns:1fr;}.ox-btn{padding:22px 10px;font-size:32px;}.quiz-header{gap:8px;}}
+</style>
+</head>
+<body>
+<div id="screen-top" class="screen active">
+  <div class="top-hero">
+    <div class="top-eyebrow">Tommy's Quiz Dojo</div>
+    <h1 class="top-title">故事・ことわざ<span>クイズ</span>道場</h1>
+    <p class="top-sub">意味あて・穴埋め・由来・正誤…遊びながらことわざ・故事成語の達人へ！</p>
+    <div class="top-rule">📋 制限時間：<strong>120秒</strong> ／ 各ジャンル<strong>10問</strong>ランダム出題<br>✅ 正解 → <strong>+10点</strong> ＋ 時間+5秒<br>❌ 不正解 → 減点なし ＋ 時間−5秒のペナルティ<br>🏆 残り時間がそのままボーナス点に加算！<br>👆 ジャンルカードをクリックで<strong>即スタート</strong>（名前入力は任意）<br>【4択】と【○×】がランダムにミックスされます</div>
+  </div>
+  <div class="genres-wrap">
+    <div class="genres-label">// ジャンルを選んでクリック → 即スタート</div>
+    <div class="genres-hint">👆 カードをクリックするとすぐに始められます（次の画面でスタートを押すだけ）</div>
+    <div class="genres-grid" id="genres-grid"></div>
+    <div class="ranking-btn-wrap"><button class="ranking-btn" onclick="showRanking()">🏆 スコアランキングを見る</button></div>
+  </div>
+</div>
+<div id="screen-intro" class="screen">
+  <div class="intro-box">
+    <span class="intro-icon" id="intro-icon"></span>
+    <div class="intro-name" id="intro-name"></div>
+    <div class="intro-desc" id="intro-desc"></div>
+    <div class="intro-rule">制限時間：<strong>120秒</strong> ／ 10問ランダム出題（4択＋○×ミックス）<br>✅ 正解 → <strong>+10点</strong> ＋ 時間+5秒<br>❌ 不正解 → 減点なし ＋ 時間−5秒<br>🏆 残り時間がそのままボーナス点に加算</div>
+    <div class="name-label">// Your Name（ランキングに表示）</div>
+    <input class="name-input" id="name-input" type="text" maxlength="20" placeholder="プレーヤー名（任意）">
+    <button class="start-btn" onclick="startGame()">スタート ▶</button>
+    <button class="back-link" onclick="showScreen('screen-top')">← 戻る</button>
+  </div>
+</div>
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="quiz-qnum" id="quiz-qnum">Q1 / 10</div>
+    <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-progress-fill" style="width:0%"></div></div>
+    <div class="quiz-score" id="quiz-score">0 pt</div>
+    <div class="quiz-timer-wrap"><div class="quiz-timer" id="quiz-timer">120</div><div class="quiz-timer-label">秒</div></div>
+  </div>
+  <div class="quiz-body">
+    <div class="quiz-type-badge" id="quiz-type-badge">4択</div>
+    <div class="quiz-q" id="quiz-q"></div>
+    <div id="quiz-choices"></div>
+    <div class="feedback-bar" id="feedback-bar"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題へ →</button>
+  </div>
+</div>
+<div id="screen-result" class="screen">
+  <div class="result-box">
+    <div class="result-genre" id="result-genre"></div>
+    <div class="result-score-wrap">
+      <span class="result-medal" id="result-medal">🏆</span>
+      <div class="result-score" id="result-score">0</div>
+      <div class="result-score-label">TOTAL SCORE</div>
+      <div class="result-stats">
+        <div class="result-stat"><div class="result-stat-val green" id="result-correct">0</div><div class="result-stat-label">正解数</div></div>
+        <div class="result-stat"><div class="result-stat-val" id="result-wrong">0</div><div class="result-stat-label">不正解数</div></div>
+        <div class="result-stat"><div class="result-stat-val gold" id="result-bonus">+0</div><div class="result-stat-label">時間ボーナス</div></div>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="result-btn result-btn-primary" onclick="retryGame()">もう一度挑戦</button>
+      <button class="result-btn result-btn-secondary" onclick="showScreen('screen-top')">← トップへ</button>
+    </div>
+  </div>
+  <div class="wrong-section" id="wrong-section"></div>
+  <a class="portal-back" href="https://pecpec37-gift.github.io/portal/">← とみやんのゲームランド（ポータルサイトに戻る）</a>
+</div>
+<div id="screen-ranking" class="screen">
+  <div class="ranking-wrap">
+    <div class="ranking-top"><div class="ranking-title">🏆 スコアランキング</div><button class="ranking-back" onclick="showScreen('screen-top')">← トップへ</button></div>
+    <div class="ranking-tabs" id="ranking-tabs"></div>
+    <div class="ranking-list" id="ranking-list"></div>
+    <div style="text-align:center;margin-top:16px;"><button class="ranking-del" onclick="deleteRanking()">🗑️ このジャンルの記録を削除</button></div>
+  </div>
+</div>
+<div id="toast"></div>
+<a class="portal-fixed-btn" href="https://pecpec37-gift.github.io/portal/">← ポータルサイトに戻る</a>
+<script>
+const GENRES=[
+  {id:'teiban', icon:'📜',name:'定番ことわざ',     color:'#c0392b',desc:'猿も木から落ちる・急がば回れ など'},
+  {id:'animal', icon:'🐾',name:'動物のことわざ',   color:'#b45309',desc:'猫に小判・馬の耳に念仏・犬猿の仲 など'},
+  {id:'koji',   icon:'🏯',name:'故事成語',         color:'#c9a227',desc:'矛盾・蛇足・漁夫の利・四面楚歌 など'},
+  {id:'karada', icon:'✋',name:'体・数字のことわざ',color:'#3fae7a',desc:'耳にたこ・百聞は一見・石の上にも三年 など'},
+  {id:'kyokun', icon:'💡',name:'教訓・人生訓',     color:'#a0341f',desc:'失敗は成功のもと・継続は力なり など'},
+  {id:'kodai',  icon:'🎓',name:'由来・上級・誤用注意',color:'#5aa9d6',desc:'役不足・他山の石・出藍の誉れ など'},
+];
+// type:'4'=4択（c配列の先頭が正解、表示時にシャッフル） / type:'ox'=○×（a:true/false）
+// q:問題文 / c:選択肢 / a:正解index(4択)またはbool(ox) / m:解説（フィードバック・復習で表示）
+const DB={
+teiban:[
+  {type:'4',q:'「どんな名人でも、時には失敗することがある」を表すことわざは？',c:['猿も木から落ちる','石の上にも三年','猫に小判','急がば回れ'],a:0,m:'猿も木から落ちる＝木登りの得意な猿でも落ちることがある。'},
+  {type:'ox',q:'<span class="koto">石の上にも三年</span>は、辛抱強く続ければ、いつか必ず成果が得られるという意味である。',a:true,m:'石の上にも三年＝冷たい石も三年座れば温まる。辛抱が大事。'},
+  {type:'4',q:'「〇も木から落ちる」の〇に入る動物は？',c:['猿','猫','犬','鳥'],a:0,m:'猿も木から落ちる。'},
+  {type:'4',q:'「上手な人でも、たまには失敗する」意味で、特に“書の名人”にちなむことわざは？',c:['弘法にも筆の誤り','河童の川流れ','猿も木から落ちる','上手の手から水が漏れる'],a:0,m:'弘法にも筆の誤り＝弘法大師（空海）でも書き損じることがある。'},
+  {type:'ox',q:'<span class="koto">急がば回れ</span>は、急ぐときほど、危ない近道より遠くても安全確実な道を行けという意味。',a:true,m:'急がば回れ。あせって失敗するより着実に。'},
+  {type:'4',q:'「危険を冒さなければ、大きな成果は得られない」を表すことわざは？',c:['虎穴に入らずんば虎子を得ず','石橋を叩いて渡る','念には念を入れよ','備えあれば憂いなし'],a:0,m:'虎穴に入らずんば虎子を得ず（こけつにいらずんばこじをえず）。'},
+  {type:'4',q:'「非常に用心深く、物事を慎重に行うこと」を表すことわざは？',c:['石橋を叩いて渡る','虎穴に入らずんば虎子を得ず','善は急げ','後は野となれ山となれ'],a:0,m:'石橋を叩いて渡る＝頑丈な石橋でさえ確かめてから渡る。'},
+  {type:'ox',q:'<span class="koto">善は急げ</span>は、よいと思ったことは、ためらわずすぐ実行せよという意味。',a:true,m:'善は急げ。'},
+  {type:'4',q:'「欲ばって二つを同時に得ようとすると、結局どちらも失う」を表すことわざは？',c:['二兎を追う者は一兎をも得ず','一石二鳥','一挙両得','棚から牡丹餅'],a:0,m:'二兎を追う者は一兎をも得ず。'},
+  {type:'4',q:'「凡人でも、三人集まって相談すればよい知恵が出る」を表すことわざは？',c:['三人寄れば文殊の知恵','三つ子の魂百まで','三度目の正直','石の上にも三年'],a:0,m:'三人寄れば文殊の知恵＝文殊は知恵をつかさどる菩薩。'},
+  {type:'ox',q:'<span class="koto">立つ鳥跡を濁さず</span>は、立ち去る者は、あとが見苦しくないようきれいに始末すべきだという意味。',a:true,m:'立つ鳥跡を濁さず。'},
+  {type:'4',q:'「能力のある人は、それをむやみにひけらかさない」を表すことわざは？',c:['能ある鷹は爪を隠す','出る杭は打たれる','灯台下暗し','立つ鳥跡を濁さず'],a:0,m:'能ある鷹は爪を隠す。'},
+  {type:'ox',q:'<span class="koto">出る杭は打たれる</span>は、才能を表す人ほど、とかく他人から憎まれ妨げられやすいという意味。',a:true,m:'出る杭は打たれる。'},
+  {type:'4',q:'「身近なことは、かえって気づきにくい」を表すことわざは？',c:['灯台下暗し','井の中の蛙大海を知らず','釈迦に説法','馬の耳に念仏'],a:0,m:'灯台下暗し＝昔の照明「灯台」の真下は暗い。'},
+  {type:'4',q:'「その道の専門家に、その分野のことを説くおろかさ」を表すことわざは？',c:['釈迦に説法','灯台下暗し','猫に小判','二の足を踏む'],a:0,m:'釈迦に説法＝釈迦に仏法を教えるようなもの。'},
+  {type:'ox',q:'<span class="koto">井の中の蛙大海を知らず</span>は、狭い世界に閉じこもり、広い世界があるのを知らないことのたとえ。',a:true,m:'もとは荘子に由来する。'},
+  {type:'4',q:'「思いがけない幸運が舞い込むこと」を表すことわざは？',c:['棚から牡丹餅','焼け石に水','後の祭り','二の舞'],a:0,m:'棚から牡丹餅（たなぼた）。'},
+  {type:'4',q:'「援助や努力がわずかで、ほとんど効果がないこと」を表すことわざは？',c:['焼け石に水','棚から牡丹餅','千里の道も一歩から','石の上にも三年'],a:0,m:'焼け石に水。'},
+  {type:'ox',q:'<span class="koto">花より団子</span>は、風流よりも実利を重んじることのたとえ。',a:true,m:'花見でも、桜より団子を喜ぶことから。'},
+  {type:'4',q:'「いくら働きかけても、手応えや効き目がまったくないこと」を表すことわざは？',c:['ぬかに釘','立て板に水','水を得た魚','棚から牡丹餅'],a:0,m:'ぬかに釘（糠に釘）。同義に「のれんに腕押し」「豆腐にかすがい」。'},
+  {type:'ox',q:'<span class="koto">立て板に水</span>は、すらすらと、よどみなく話すことのたとえ。',a:true,m:'立て板に水。'},
+  {type:'4',q:'「専門のことは専門家に任せるのが一番よい」を表すことわざは？',c:['餅は餅屋','三人寄れば文殊の知恵','瓜の蔓に茄子はならぬ','蛙の子は蛙'],a:0,m:'餅は餅屋＝餅は餅屋のついたものが一番うまい。'},
+  {type:'4',q:'「目立たない所で、人のために陰ながら苦労・努力する人」を表すことわざは？',c:['縁の下の力持ち','能ある鷹は爪を隠す','灯台下暗し','立つ鳥跡を濁さず'],a:0,m:'縁の下の力持ち。'},
+  {type:'ox',q:'<span class="koto">月とすっぽん</span>は、見かけは似ていても、実際は優劣に大きな差があることのたとえ。',a:true,m:'月とすっぽん＝どちらも丸いが価値が大違い。'},
+  {type:'4',q:'「わずかなものでも、積み重なれば大きくなる」を表すことわざは？',c:['塵も積もれば山となる','焼け石に水','二の足を踏む','後の祭り'],a:0,m:'塵も積もれば山となる。'},
+  {type:'4',q:'「石の上にも三年」の「三年」のように、〇〇の上にも我慢…の〇〇は？',c:['石','板','岩','床'],a:0,m:'石の上にも三年。'},
+  {type:'ox',q:'<span class="koto">二階から目薬</span>は、思うように届かず、もどかしくて効果が上がらないことのたとえ。',a:true,m:'二階から目薬。'},
+  {type:'4',q:'「大事業も、まず最初の一歩から始まる。何事も着実な積み重ねが大切」を表すことわざは？',c:['千里の道も一歩から','後は野となれ山となれ','善は急げ','棚から牡丹餅'],a:0,m:'千里の道も一歩から（老子）。'},
+],
+animal:[
+  {type:'4',q:'「価値のわからない者に、貴重なものを与えても無駄なこと」を表すことわざは？',c:['猫に小判','犬猿の仲','虎の威を借る狐','猫の手も借りたい'],a:0,m:'猫に小判。同義に「豚に真珠」「馬の耳に念仏」。'},
+  {type:'ox',q:'<span class="koto">豚に真珠</span>は、値打ちのわからない者には、貴重なものを与えても無意味だという意味。',a:true,m:'豚に真珠。新約聖書に由来。'},
+  {type:'4',q:'「いくら意見をしても、少しも効き目がないこと」を表すことわざは？',c:['馬の耳に念仏','飼い犬に手を噛まれる','犬も歩けば棒に当たる','鳶が鷹を生む'],a:0,m:'馬の耳に念仏。同義に「馬耳東風」「のれんに腕押し」。'},
+  {type:'ox',q:'<span class="koto">飼い犬に手を噛まれる</span>は、日ごろ面倒をみていた者に裏切られ、害を受けることのたとえ。',a:true,m:'飼い犬に手を噛まれる。'},
+  {type:'4',q:'「犬も歩けば〇に当たる」の〇に入る語は？',c:['棒','犬','穴','人'],a:0,m:'犬も歩けば棒に当たる＝①出歩くと災難に遭う ②何かすれば思わぬ幸運に会う、の両義。'},
+  {type:'4',q:'「水泳の名人でも、油断すれば失敗する」を表す、河童にちなむことわざは？',c:['河童の川流れ','犬も歩けば棒に当たる','猫の手も借りたい','馬が合う'],a:0,m:'河童の川流れ＝泳ぎの達人の河童でも、川に流されることがある。'},
+  {type:'ox',q:'<span class="koto">鳶が鷹を生む</span>は、平凡な親から、すぐれた子が生まれることのたとえ。',a:true,m:'鳶（とんび）が鷹（たか）を生む。'},
+  {type:'4',q:'「子は親に似るもの。平凡な親からは平凡な子が生まれる」を表すことわざは？',c:['蛙の子は蛙','鳶が鷹を生む','窮鼠猫を噛む','犬猿の仲'],a:0,m:'蛙の子は蛙。'},
+  {type:'4',q:'「弱い者でも、追い詰められれば強い者に反撃する」を表すことわざは？',c:['窮鼠猫を噛む','飼い犬に手を噛まれる','虎の威を借る狐','猫の手も借りたい'],a:0,m:'窮鼠猫を噛む（きゅうそねこをかむ）。'},
+  {type:'ox',q:'<span class="koto">虎の威を借る狐</span>は、他人の権勢をかさに着て、いばる小者のたとえ。',a:true,m:'戦国策の故事による。'},
+  {type:'4',q:'「非常に忙しくて、わずかな手伝いでもほしいこと」を表すことわざは？',c:['猫の手も借りたい','借りてきた猫','猫の額','猫に小判'],a:0,m:'猫の手も借りたい。'},
+  {type:'4',q:'「土地などがとても狭いこと」のたとえに使われる、猫の体の部分は？',c:['額','手','目','尻尾'],a:0,m:'猫の額（ねこのひたい）＝とても狭い場所。'},
+  {type:'ox',q:'<span class="koto">借りてきた猫</span>は、ふだんと違って、おとなしく神妙にしている様子のたとえ。',a:true,m:'借りてきた猫のよう。'},
+  {type:'4',q:'「仲が非常に悪いこと」を表すことわざは？',c:['犬猿の仲','馬が合う','呉越同舟','猫の手も借りたい'],a:0,m:'犬猿の仲＝犬と猿のように仲が悪い。'},
+  {type:'ox',q:'「夫婦げんかは犬も食わない」は、夫婦の争いはつまらないので、他人が口出しするものではないという意味。',a:true,m:'犬さえ見向きもしないことから。'},
+  {type:'4',q:'「小さな元手で、大きな利益を得ること」を表すことわざは？',c:['海老で鯛を釣る','猫に小判','棚から牡丹餅','焼け石に水'],a:0,m:'海老で鯛を釣る（えびでたいをつる）。'},
+  {type:'ox',q:'<span class="koto">蓼食う虫も好き好き</span>は、人の好みはさまざまで、一概には言えないという意味。',a:true,m:'蓼（たで）は辛い葉だが、それを好んで食う虫もいる。'},
+  {type:'4',q:'「もともと強い者に、さらに強さが加わって最強になること」を表すことわざは？',c:['鬼に金棒','虎の威を借る狐','窮鼠猫を噛む','馬の耳に念仏'],a:0,m:'鬼に金棒＝強い鬼が金棒を持つ。'},
+  {type:'4',q:'「大勢の議論を、一声でまとめてしまう権威者の発言」を表すことわざは？',c:['鶴の一声','雀の涙','猫なで声','犬猿の仲'],a:0,m:'鶴の一声（つるのひとこえ）。'},
+  {type:'ox',q:'<span class="koto">雀の涙</span>は、ほんのわずかな量のたとえ。',a:true,m:'雀の涙ほど。'},
+  {type:'4',q:'「〇の子は〇」＝子は親に似るという意味の動物は？',c:['蛙','蛇','虎','鳶'],a:0,m:'蛙の子は蛙。'},
+  {type:'4',q:'「数量をごまかすこと」を表す、魚にちなんだ言い方は？',c:['鯖を読む','海老で鯛を釣る','水を得た魚','蓼食う虫も好き好き'],a:0,m:'鯖を読む（さばをよむ）。'},
+  {type:'ox',q:'<span class="koto">水を得た魚</span>は、自分に合った場所・環境を得て、いきいきと活躍する様子のたとえ。',a:true,m:'水を得た魚のよう。'},
+  {type:'4',q:'「同類のことは、その道の者がよく知っているということ」を表すことわざは？',c:['蛇の道は蛇','馬が合う','蛙の子は蛙','猫をかぶる'],a:0,m:'蛇の道は蛇（じゃのみちはへび）。'},
+  {type:'4',q:'「気が合うこと、相性がよいこと」を表す、馬にちなむ言い方は？',c:['馬が合う','犬猿の仲','馬の耳に念仏','猫をかぶる'],a:0,m:'馬が合う＝乗り手と馬の相性が合うことから。'},
+  {type:'ox',q:'<span class="koto">猫をかぶる</span>は、本性を隠して、うわべだけおとなしそうに振る舞うことのたとえ。',a:true,m:'猫をかぶる。'},
+  {type:'4',q:'「自分から、危険や破滅へ飛び込んでいくこと」を表すことわざは？',c:['飛んで火に入る夏の虫','窮鼠猫を噛む','虎の威を借る狐','猫の手も借りたい'],a:0,m:'飛んで火に入る夏の虫。'},
+],
+koji:[
+  {type:'4',q:'「二つの物事のつじつまが合わないこと」を表す故事成語は？',c:['矛盾','蛇足','杞憂','推敲'],a:0,m:'矛盾（むじゅん）＝どんな盾も貫く矛と、どんな矛も防ぐ盾を売った楚の商人の故事（韓非子）。'},
+  {type:'ox',q:'<span class="koto">蛇足</span>は、なくてもよい、よけいな付け足しのことをいう。',a:true,m:'蛇の絵に足を描き足して負けた故事（戦国策）から。'},
+  {type:'4',q:'「二者が争っている間に、第三者が労せず利益を横取りすること」を表す故事成語は？',c:['漁夫の利','虎の威を借る狐','五十歩百歩','四面楚歌'],a:0,m:'漁夫の利＝シギとハマグリが争ううちに、漁師が両方とも捕らえた故事。'},
+  {type:'4',q:'「周囲がすべて敵で、孤立無援であること」を表す故事成語は？',c:['四面楚歌','背水の陣','呉越同舟','臥薪嘗胆'],a:0,m:'四面楚歌＝項羽が四方を漢軍に囲まれ、楚の歌が聞こえてきた故事（史記）。'},
+  {type:'ox',q:'<span class="koto">五十歩百歩</span>は、少しの違いはあっても、本質的には同じで大した差がないことのたとえ。',a:true,m:'戦場で五十歩逃げた者が、百歩逃げた者を笑った故事（孟子）。'},
+  {type:'4',q:'「取り越し苦労、無用の心配」を表す故事成語は？',c:['杞憂','蛇足','推敲','矛盾'],a:0,m:'杞憂（きゆう）＝杞の国の人が「天が落ちてこないか」と心配した故事（列子）。'},
+  {type:'4',q:'「文章や詩の字句を、何度も練り直すこと」を表す故事成語は？',c:['推敲','換骨奪胎','圧巻','蛍雪の功'],a:0,m:'推敲（すいこう）＝詩人・賈島が「推す」か「敲く（たたく）」かで悩んだ故事。'},
+  {type:'ox',q:'<span class="koto">温故知新</span>は、昔のことをよく研究し、そこから新しい知識・道理を得ることをいう。',a:true,m:'論語「故きを温ねて新しきを知る」。'},
+  {type:'4',q:'「人生の幸不幸は予測できない、という教え」を表す故事成語は？',c:['塞翁が馬','覆水盆に返らず','呉越同舟','五十歩百歩'],a:0,m:'人間万事塞翁が馬（さいおうがうま）＝淮南子。'},
+  {type:'4',q:'「一度してしまったことは、取り返しがつかないこと」を表す故事成語は？',c:['覆水盆に返らず','塞翁が馬','背水の陣','蛇足'],a:0,m:'覆水盆に返らず＝太公望が、離縁した妻に「こぼした盆の水を元に戻せたら」と言った故事。'},
+  {type:'ox',q:'<span class="koto">呉越同舟</span>は、仲の悪い者同士が、同じ場所・境遇に居合わせることのたとえ。',a:true,m:'孫子。仲の悪い呉と越の人が、同じ舟に乗り合わせた故事。'},
+  {type:'4',q:'「決死の覚悟で、物事に当たること」を表す故事成語は？',c:['背水の陣','臥薪嘗胆','登竜門','画竜点睛'],a:0,m:'背水の陣＝韓信が川を背に陣を敷き、退路を断って戦った故事（史記）。'},
+  {type:'4',q:'「目的を遂げるため、長い間つらい苦労を重ねること」を表す故事成語は？',c:['臥薪嘗胆','背水の陣','蛍雪の功','五十歩百歩'],a:0,m:'臥薪嘗胆（がしんしょうたん）＝薪の上に寝、苦い肝をなめて復讐を誓った呉越の故事。'},
+  {type:'ox',q:'<span class="koto">登竜門</span>は、そこを通れば立身出世できるとされる、難しい関門のことをいう。',a:true,m:'黄河上流の急流「竜門」を登った鯉は竜になるという伝説から。'},
+  {type:'4',q:'「物事を完成させる、最後の大切な仕上げ」を表す故事成語は？',c:['画竜点睛','蛇足','圧巻','推敲'],a:0,m:'画竜点睛（がりょうてんせい）＝竜の絵に最後にひとみ（睛）を入れたら飛び去った故事。'},
+  {type:'4',q:'「全体の中で、最もすぐれた部分」を表す故事成語は？',c:['圧巻','登竜門','画竜点睛','蛍雪'],a:0,m:'圧巻（あっかん）＝科挙で最優秀の答案（巻）を一番上に置いた故事。'},
+  {type:'ox',q:'<span class="koto">蛍雪の功</span>は、苦労して勉学に励み、その成果が上がることをいう。',a:true,m:'蛍の光や雪明かりで勉強した、車胤（しゃいん）・孫康（そんこう）の故事。'},
+  {type:'4',q:'「少しの欠点もなく、完全であること」を表す故事成語は？',c:['完璧','圧巻','蛇足','杞憂'],a:0,m:'完璧（かんぺき）＝藺相如（りんしょうじょ）が、傷一つなく宝玉「璧」を持ち帰った故事。'},
+  {type:'4',q:'「目先の違いにこだわって、結果が同じだと気づかないこと」を表す故事成語は？',c:['朝三暮四','五十歩百歩','矛盾','蛇足'],a:0,m:'朝三暮四＝サルに「朝三つ夜四つ」を「朝四つ夜三つ」に変えたら喜んだ故事。'},
+  {type:'ox',q:'<span class="koto">助長</span>は、本来「不要な手助けをして、かえって害を与えること」を意味した。',a:true,m:'苗の成長を助けようと引っ張って枯らした、宋の人の故事（孟子）。'},
+  {type:'4',q:'「古い習慣や経験にこだわって、進歩がないこと」を表す故事成語は？',c:['守株','温故知新','五十歩百歩','塞翁が馬'],a:0,m:'守株（しゅしゅ）／株を守る＝偶然うさぎが切り株に当たって死んだのを見て、また同じ幸運を待ち続けた農夫の故事（韓非子）。'},
+  {type:'ox',q:'<span class="koto">杜撰</span>は、物事のやり方がいいかげんで、誤りが多いことをいう。',a:true,m:'杜黙（ともく）の詩が規則に合わなかった故事とされる。'},
+  {type:'4',q:'「先人の詩文の発想・表現を生かしつつ、独自の作品を作ること」を表す故事成語は？',c:['換骨奪胎','推敲','温故知新','画竜点睛'],a:0,m:'換骨奪胎（かんこつだったい）。'},
+  {type:'ox',q:'<span class="koto">破竹の勢い</span>は、止めようがないほど激しい勢いのたとえ。',a:true,m:'竹は最初の節を割れば、あとは一気に割れることから（晋書）。'},
+  {type:'4',q:'「四面楚歌」で四方を囲まれ、楚の歌を聞いて嘆いた人物は？',c:['項羽','劉邦','韓信','張良'],a:0,m:'項羽（こうう）。漢の劉邦軍に囲まれた。'},
+  {type:'4',q:'「背水の陣」を敷いて勝利したとされる、漢の名将は？',c:['韓信','項羽','張良','蕭何'],a:0,m:'韓信（かんしん）。'},
+  {type:'ox',q:'「矛盾」の由来となった楚の商人は、「矛（ほこ）」と「盾（たて）」を同時に売っていた。',a:true,m:'どんな盾も貫く矛、どんな矛も防ぐ盾、と両方を売ったため。'},
+  {type:'4',q:'「漁夫の利」のもとになったのは、どの二者の争いか？',c:['シギ（鷸）とハマグリ（蚌）','犬と猿','虎と狐','馬と鹿'],a:0,m:'シギがハマグリをつつき、互いに譲らぬうちに漁師に捕らえられた。'},
+],
+karada:[
+  {type:'4',q:'「同じことを何度も聞かされて、聞き飽きること」を表す慣用句は？',c:['耳にたこができる','目から鱗が落ちる','舌を巻く','二の足を踏む'],a:0,m:'耳にたこができる。'},
+  {type:'4',q:'「あることをきっかけに、急に物事の真相がわかるようになること」を表す慣用句は？',c:['目から鱗が落ちる','耳にたこができる','頭が下がる','手を焼く'],a:0,m:'目から鱗（うろこ）が落ちる。新約聖書に由来。'},
+  {type:'ox',q:'<span class="koto">口は災いの元</span>は、不用意な発言が、災難を招くもとになるという戒め。',a:true,m:'口は災いの元（門）。'},
+  {type:'4',q:'「非常に感心して、驚くこと」を表す慣用句は？',c:['舌を巻く','二の足を踏む','足を引っ張る','腹を割る'],a:0,m:'舌を巻く。'},
+  {type:'4',q:'「ためらって、思い切れないこと」を表す慣用句は？',c:['二の足を踏む','二の舞を演じる','足を洗う','顔が広い'],a:0,m:'二の足を踏む。'},
+  {type:'ox',q:'<span class="koto">二の舞を演じる</span>は、前の人と同じ失敗を繰り返すことのたとえ。',a:true,m:'二の舞を演じる。'},
+  {type:'4',q:'「他人の成功や物事の進行を、わきから妨げること」を表す慣用句は？',c:['足を引っ張る','足を洗う','手を貸す','胸を借りる'],a:0,m:'足を引っ張る。'},
+  {type:'4',q:'「好ましくない仕事や悪い仲間から、きっぱり身を引くこと」を表す慣用句は？',c:['足を洗う','足を引っ張る','手を焼く','腰が引ける'],a:0,m:'足を洗う。'},
+  {type:'ox',q:'<span class="koto">胸を借りる</span>は、実力が上の相手に、練習や勝負の相手をしてもらうことをいう。',a:true,m:'相撲で、上位の力士に稽古をつけてもらうことから。'},
+  {type:'4',q:'「得意で、誇らしい気持ちであること」を表す慣用句は？',c:['鼻が高い','顔が広い','肩を持つ','頭が固い'],a:0,m:'鼻が高い。'},
+  {type:'4',q:'「知り合いが多く、交際範囲が広いこと」を表す慣用句は？',c:['顔が広い','鼻が高い','口が堅い','耳が早い'],a:0,m:'顔が広い。'},
+  {type:'ox',q:'<span class="koto">肩を持つ</span>は、対立する一方の味方をして、ひいきすることをいう。',a:true,m:'肩を持つ。'},
+  {type:'4',q:'「相手が強すぎて、まったく歯が立たないこと」を表す慣用句は？',c:['歯が立たない','腰が引ける','二の足を踏む','腹を割る'],a:0,m:'歯が立たない＝固くて噛めない→難しすぎて対抗できない。'},
+  {type:'ox',q:'<span class="koto">腹を割る</span>は、本心を包み隠さず、打ち明けることをいう。',a:true,m:'腹を割って話す。'},
+  {type:'4',q:'「ばかばかしくて、とても信じられないこと」を表す慣用句は？',c:['へそで茶を沸かす','骨が折れる','腰を据える','顔から火が出る'],a:0,m:'へそで茶を沸かす。'},
+  {type:'4',q:'「非常に苦労する、骨身を惜しまず努力すること」を表す慣用句は？',c:['骨が折れる','腰を据える','胸を借りる','足が出る'],a:0,m:'骨が折れる。'},
+  {type:'ox',q:'<span class="koto">腰を据える</span>は、落ち着いて、じっくり物事に取り組むことをいう。',a:true,m:'腰を据える。'},
+  {type:'4',q:'「百回聞くより、一度自分の目で見るほうが確かだ」を表すことわざは？',c:['百聞は一見に如かず','一を聞いて十を知る','石の上にも三年','早起きは三文の徳'],a:0,m:'百聞は一見に如かず（漢書）。'},
+  {type:'4',q:'「ほんの一部を聞いただけで、全体を理解する賢さ」を表すことわざは？',c:['一を聞いて十を知る','百聞は一見に如かず','三人寄れば文殊の知恵','石の上にも三年'],a:0,m:'一を聞いて十を知る（論語）。'},
+  {type:'ox',q:'<span class="koto">早起きは三文の徳</span>は、朝早く起きると、何かしらよいことがあるという意味。',a:true,m:'「徳」は「得」とも書く。三文はわずかな額。'},
+  {type:'4',q:'「幼いころの性質は、年をとっても変わらないこと」を表すことわざは？',c:['三つ子の魂百まで','石の上にも三年','三度目の正直','仏の顔も三度'],a:0,m:'三つ子の魂百まで。'},
+  {type:'4',q:'「二度の失敗のあと、三度目には成功するということ」を表すことわざは？',c:['三度目の正直','仏の顔も三度','二度あることは三度ある','石の上にも三年'],a:0,m:'三度目の正直。'},
+  {type:'ox',q:'<span class="koto">仏の顔も三度</span>は、どんなに温厚な人でも、何度も無礼を受ければ怒り出すという意味。',a:true,m:'「仏の顔も三度撫ずれば腹立つ」から。'},
+  {type:'4',q:'「どんなに弱小な者にも、それ相応の意地や考えがある」を表すことわざは？',c:['一寸の虫にも五分の魂','一寸先は闇','石の上にも三年','一を聞いて十を知る'],a:0,m:'一寸の虫にも五分の魂。'},
+  {type:'ox',q:'<span class="koto">一寸先は闇</span>は、ほんの少し先の未来でさえ、どうなるか予測できないという意味。',a:true,m:'一寸先は闇。'},
+  {type:'4',q:'「腹〇分目に医者いらず」の〇に入る数字は？',c:['八','七','六','九'],a:0,m:'腹八分目に医者いらず＝食べ過ぎず控えめが健康によい。'},
+  {type:'4',q:'「親の〇光り」＝親の地位や名声のおかげで子が得をすること。〇に入る数字は？',c:['七','三','八','十'],a:0,m:'親の七光り。'},
+],
+kyokun:[
+  {type:'ox',q:'<span class="koto">失敗は成功のもと</span>は、失敗しても原因を反省し改善すれば、かえって成功につながるという教え。',a:true,m:'失敗は成功のもと（基）。'},
+  {type:'4',q:'「何事も続けることが大切で、やめずに励めば必ず力がつく」を表すことばは？',c:['継続は力なり','善は急げ','急がば回れ','後悔先に立たず'],a:0,m:'継続は力なり。'},
+  {type:'4',q:'「物事をするのに、ちょうどよい時機を逃すな（また人は柔軟なうちに鍛えよ）」を表すことわざは？',c:['鉄は熱いうちに打て','善は急げ','思い立ったが吉日','急がば回れ'],a:0,m:'鉄は熱いうちに打て。'},
+  {type:'ox',q:'<span class="koto">思い立ったが吉日</span>は、何かをしようと決心したら、その日を吉日として、すぐ始めるのがよいという意味。',a:true,m:'思い立ったが吉日。'},
+  {type:'4',q:'「何事も、最初の決意や謙虚な気持ちを忘れてはならない」という教えを表すことばは？',c:['初心忘るべからず','継続は力なり','石の上にも三年','失敗は成功のもと'],a:0,m:'初心忘るべからず＝能の世阿弥の言葉。'},
+  {type:'4',q:'「人に親切にしておけば、巡り巡って、自分によい報いが返ってくる」を表すことわざは？',c:['情けは人の為ならず','身から出た錆','自業自得','後悔先に立たず'],a:0,m:'情けは人の為ならず＝「人のためにならない」という意味ではない点に注意。'},
+  {type:'ox',q:'<span class="koto">情けは人の為ならず</span>は、「親切は相手を甘やかすので、その人のためにならない」という意味である。',a:false,m:'誤り。正しくは「人にかけた情けは、巡り巡って自分に返ってくる」。代表的な誤用。'},
+  {type:'4',q:'「準備を十分にしておけば、いざというときに心配がない」を表すことわざは？',c:['備えあれば憂いなし','念には念を入れよ','善は急げ','後の祭り'],a:0,m:'備えあれば憂いなし。'},
+  {type:'ox',q:'<span class="koto">転ばぬ先の杖</span>は、失敗しないように、前もって十分用心しておくことのたとえ。',a:true,m:'転ばぬ先の杖。'},
+  {type:'4',q:'「忠告やためになる言葉は、聞くのはつらいが、自分のためになる」を表すことわざは？',c:['良薬は口に苦し','口は災いの元','後悔先に立たず','情けは人の為ならず'],a:0,m:'良薬は口に苦し（孔子家語）。'},
+  {type:'4',q:'「苦労や辛いことのあとには、楽しいことがめぐってくる」を表すことわざは？',c:['苦あれば楽あり','楽あれば苦あり','急がば回れ','後悔先に立たず'],a:0,m:'苦あれば楽あり（「楽あれば苦あり」と対で使われる）。'},
+  {type:'ox',q:'<span class="koto">待てば海路の日和あり</span>は、あせらず待っていれば、いつか必ず好機がめぐってくるという意味。',a:true,m:'待てば海路の日和（ひより）あり。'},
+  {type:'4',q:'「もめごとや困難のあとは、かえって基礎が固まり、物事が安定する」を表すことわざは？',c:['雨降って地固まる','備えあれば憂いなし','急がば回れ','善は急げ'],a:0,m:'雨降って地固まる。'},
+  {type:'ox',q:'<span class="koto">災い転じて福となす</span>は、降りかかった災難を、うまく利用して、かえって自分の幸せに変えることをいう。',a:true,m:'災い転じて福となす。'},
+  {type:'4',q:'「明るく朗らかにしていれば、自然と幸運が訪れる」を表すことわざは？',c:['笑う門には福来る','棚から牡丹餅','果報は寝て待て','備えあれば憂いなし'],a:0,m:'笑う門には福来る（わらうかどにはふくきたる）。'},
+  {type:'4',q:'「幸運は、あせらずに気長に待つのがよい」を表すことわざは？',c:['果報は寝て待て','善は急げ','思い立ったが吉日','急がば回れ'],a:0,m:'果報は寝て待て。'},
+  {type:'ox',q:'<span class="koto">急いては事を仕損じる</span>は、あせって急ぐと、かえって失敗しやすいという戒め。',a:true,m:'「急がば回れ」と同じ趣旨。'},
+  {type:'4',q:'「種をまかなければ収穫はない＝何もしなければ成果は得られない」を表すことわざは？',c:['蒔かぬ種は生えぬ','果報は寝て待て','棚から牡丹餅','石の上にも三年'],a:0,m:'蒔かぬ種は生えぬ。'},
+  {type:'4',q:'「あれこれ心配するより、実際にやってみれば案外たやすいものだ」を表すことわざは？',c:['案ずるより産むが易し','備えあれば憂いなし','石橋を叩いて渡る','念には念を入れよ'],a:0,m:'案ずるより産むが易し。'},
+  {type:'ox',q:'<span class="koto">論より証拠</span>は、口で議論するより、確かな証拠を示すほうが、物事がはっきりするという意味。',a:true,m:'論より証拠。'},
+  {type:'4',q:'「大人物は、若い頃は目立たなくても、年をとってから大成すること」を表すことばは？',c:['大器晩成','能ある鷹は爪を隠す','石の上にも三年','継続は力なり'],a:0,m:'大器晩成（老子）。'},
+  {type:'4',q:'「好きで熱心にやれば、自然と上達するものだ」を表すことわざは？',c:['好きこそ物の上手なれ','下手の横好き','継続は力なり','急がば回れ'],a:0,m:'好きこそ物の上手なれ。'},
+  {type:'ox',q:'<span class="koto">下手の横好き</span>は、下手なのに、その物事が好きで熱中することをいう。',a:true,m:'下手の横好き。'},
+  {type:'4',q:'「物事をやり終えたあとで悔やんでも、もう取り返しがつかない」を表すことわざは？',c:['後悔先に立たず','石の上にも三年','急がば回れ','善は急げ'],a:0,m:'後悔先に立たず。'},
+  {type:'ox',q:'<span class="koto">後の祭り</span>は、時機を逃してしまい、いまさら悔やんでも手遅れであることのたとえ。',a:true,m:'祭りが終わったあとの山車のように、役に立たないことから。'},
+  {type:'4',q:'「大事業も、時間をかけて少しずつ築かれるもので、一朝一夕にはできない」を表すことわざは？',c:['ローマは一日にして成らず','善は急げ','石の上にも三年','後の祭り'],a:0,m:'ローマは一日にして成らず。'},
+],
+kodai:[
+  {type:'ox',q:'<span class="koto">役不足</span>は、本来「その人の力量に対して、与えられた役目が軽すぎること」をいう。',a:true,m:'「力量が足りない」は誤用。本来は逆の意味。代表的な誤用語。'},
+  {type:'ox',q:'<span class="koto">気が置けない</span>は、「油断できない、気を許せない」という意味である。',a:false,m:'誤り。本来は「遠慮がいらず、気楽に付き合える」という意味。'},
+  {type:'4',q:'「他人のつまらない言行も、自分の修養の助けになる」という意味の故事成語は？',c:['他山の石','反面教師','温故知新','圧巻'],a:0,m:'他山の石（たざんのいし）。詩経に由来。'},
+  {type:'ox',q:'<span class="koto">他山の石</span>は、「すぐれた人の言行を、見習うべき手本とする」という意味である。',a:false,m:'誤り。本来は「他人の悪い言行も、自分を磨く参考になる」という意味。'},
+  {type:'4',q:'「だれも成しえなかったことを、初めて行うこと」を表す故事成語は？',c:['破天荒','空前絶後','画竜点睛','圧巻'],a:0,m:'破天荒（はてんこう）＝合格者の出なかった地から、初の科挙合格者が出た故事。'},
+  {type:'ox',q:'<span class="koto">破天荒</span>は、本来「だれも成しえなかったことを、初めて行うこと」をいう。',a:true,m:'「豪快・大胆」の意味は俗用。'},
+  {type:'4',q:'「つまらないものでも、無いよりはまし。多くは謙遜して使う」ことわざは？',c:['枯れ木も山の賑わい','花より団子','猫に小判','過ぎたるは…'],a:0,m:'枯れ木も山の賑わい。'},
+  {type:'ox',q:'来客に「ぜひお越しを、枯れ木も山の賑わいですから」と言うのは、本来は失礼な誤用である。',a:true,m:'<span class="koto">枯れ木も山の賑わい</span>は自分を謙遜して使う語。相手を「枯れ木」扱いすることになる。'},
+  {type:'4',q:'「何事もほどほどがよく、やりすぎは、足りないのと同じくらいよくない」を表すことばは？',c:['過ぎたるは猶及ばざるが如し','五十歩百歩','急がば回れ','論より証拠'],a:0,m:'過ぎたるは猶及ばざるが如し（すぎたるはなおおよばざるがごとし）。論語。'},
+  {type:'ox',q:'「五十歩百歩」は孟子、「過ぎたるは猶及ばざるが如し」は論語と、いずれも中国の古典に由来する。',a:true,m:'故事成語の多くは中国古典が出典。'},
+  {type:'4',q:'「井の中の蛙大海を知らず」のもとになった、中国の古典は？',c:['荘子','論語','孫子','史記'],a:0,m:'荘子（そうじ）。'},
+  {type:'4',q:'「弟子が、師匠よりもすぐれること」を表す故事成語は？',c:['出藍の誉れ','蛍雪の功','登竜門','圧巻'],a:0,m:'出藍の誉れ（しゅつらんのほまれ）。荀子「青は藍より出でて藍より青し」に由来。'},
+  {type:'ox',q:'「青は藍より出でて藍より青し」は、弟子が師匠よりすぐれることのたとえである。',a:true,m:'藍（あい）という草から取った青い染料は、もとの藍より青いことから（荀子）。'},
+  {type:'4',q:'「杞憂」で、杞の国の人が心配したことは何か？',c:['天が落ちてくること','大水が出ること','戦が起こること','日照りが続くこと'],a:0,m:'天地が崩れ落ちはしないかと心配した故事（列子）。'},
+  {type:'ox',q:'「推敲」の由来で、詩人が悩んだのは「僧は推す（おす）」と「僧は敲く（たたく）」のどちらの字を使うかであった。',a:true,m:'詩人・賈島（かとう）の故事。',},
+  {type:'4',q:'「権力で、道理に合わないことを無理に押し通すこと」を表す、史記に由来する故事は？',c:['鹿を指して馬となす','虎の威を借る狐','朝三暮四','五十歩百歩'],a:0,m:'鹿を指して馬となす（指鹿為馬・しろくいば）＝秦の趙高が、鹿を「馬だ」と言い張った故事。'},
+  {type:'4',q:'「方針が、朝出した命令を夕方には変えるように、ころころ変わって定まらないこと」を表す故事成語は？',c:['朝令暮改','右往左往','付和雷同','一網打尽'],a:0,m:'朝令暮改（ちょうれいぼかい）。'},
+  {type:'ox',q:'「自分の考えがなく、他人の意見にすぐ同調すること」を<span class="koto">付和雷同</span>という。',a:true,m:'付和雷同（ふわらいどう）。'},
+  {type:'4',q:'「悪人どもを、一度に残らず捕らえること」を表す故事成語は？',c:['一網打尽','付和雷同','朝令暮改','隔靴掻痒'],a:0,m:'一網打尽（いちもうだじん）＝一度網を打って、魚を全部捕る。'},
+  {type:'4',q:'「物事の核心をつかず、もどかしくて要領を得ないこと」を表す難しいことわざは？',c:['隔靴掻痒','支離滅裂','五里霧中','一網打尽'],a:0,m:'隔靴掻痒（かっかそうよう）＝靴の上から、かゆい所をかくようにもどかしいこと。'},
+  {type:'ox',q:'<span class="koto">五里霧中</span>は、霧の中にいるように見通しが立たず、迷うことのたとえ。正しくは「夢中」ではなく「霧中」と書く。',a:true,m:'五里霧中（ごりむちゅう）。後漢書に由来。'},
+  {type:'4',q:'「すぐれたものは、多少悪くなっても、それなりの値打ちを保つ」を表すことわざは？',c:['腐っても鯛','枯れ木も山の賑わい','蛙の子は蛙','花より団子'],a:0,m:'腐っても鯛（くさってもたい）。'},
+  {type:'ox',q:'「噂をすれば影（が差す）」は、人の噂をしていると、当人がひょっこり現れるものだという意味。',a:true,m:'噂をすれば影。'},
+  {type:'4',q:'「矛盾」の出典（由来の書物）は、次のうちどれか？',c:['韓非子','論語','孫子','史記'],a:0,m:'韓非子（かんぴし）の「難一」篇。'},
+  {type:'ox',q:'「呉越同舟」と「臥薪嘗胆」は、いずれも「呉」と「越」という国の争いに関係する故事である。',a:true,m:'春秋時代の呉越の対立に由来する。'},
+  {type:'4',q:'「人の生き方や成功は、若い頃の苦労がものを言う」に最も近い、晋書由来の故事成語は？',c:['蛍雪の功','破天荒','他山の石','一網打尽'],a:0,m:'蛍雪の功＝苦学して成果を上げること。'},
+],
+};
+let currentGenre=null,questions=[],qIndex=0,score=0,correctCount=0,wrongCount=0;
+let timeLeft=120,timer=null,answered=false,wrongAnswers=[],playerName='';
+let currentRankingGenre=null;
+let curChoices=[],curCorrectIdx=-1;
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function showToast(msg,d=2500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d);}
+function buildGenreCards(){
+  const grid=document.getElementById('genres-grid');
+  grid.innerHTML=GENRES.map(g=>`<div class="genre-card" onclick="selectGenre('${g.id}')"><div class="genre-accent" style="background:${g.color};"></div><span class="genre-icon">${g.icon}</span><div class="genre-name">${g.name}</div><div class="genre-desc">${g.desc}</div><div class="genre-count">全${DB[g.id].length}問収録 ／ 10問ランダム出題</div><span class="genre-start">▶ START</span></div>`).join('');
+}
+function selectGenre(id){
+  currentGenre=GENRES.find(g=>g.id===id);
+  document.getElementById('intro-icon').textContent=currentGenre.icon;
+  document.getElementById('intro-name').textContent=currentGenre.name;
+  document.getElementById('intro-desc').textContent=currentGenre.desc;
+  if(window.TomyStamp){const saved=TomyStamp.getPlayer();const inp=document.getElementById('name-input');if(saved&&!inp.value)inp.value=saved;}
+  showScreen('screen-intro');
+}
+function startGame(){
+  playerName=document.getElementById('name-input').value.trim()||'ゲスト';
+  if(window.TomyStamp&&playerName!=='ゲスト')TomyStamp.setPlayer(playerName);
+  questions=shuffle(DB[currentGenre.id]).slice(0,10);
+  qIndex=0;score=0;correctCount=0;wrongCount=0;wrongAnswers=[];
+  showScreen('screen-quiz');showQuestion();startTimer();
+}
+function retryGame(){showScreen('screen-intro');}
+function startTimer(){clearInterval(timer);timeLeft=120;updateTimerDisplay();timer=setInterval(()=>{timeLeft--;updateTimerDisplay();if(timeLeft<=0){clearInterval(timer);endGame();}},1000);}
+function updateTimerDisplay(){const el=document.getElementById('quiz-timer');el.textContent=timeLeft;el.className='quiz-timer'+(timeLeft<=10?' danger':'');}
+function showQuestion(){
+  const q=questions[qIndex];answered=false;
+  document.getElementById('quiz-qnum').textContent=`Q${qIndex+1} / 10`;
+  document.getElementById('quiz-progress-fill').style.width=`${(qIndex/10)*100}%`;
+  document.getElementById('quiz-score').textContent=`${score} pt`;
+  document.getElementById('feedback-bar').className='feedback-bar';
+  document.getElementById('feedback-bar').innerHTML='';
+  document.getElementById('next-btn').className='next-btn';
+  if(q.type==='4'){
+    document.getElementById('quiz-type-badge').textContent='4択';
+    document.getElementById('quiz-type-badge').className='quiz-type-badge type-4';
+    document.getElementById('quiz-q').innerHTML=q.q;
+    // 選択肢をシャッフルして正解位置の偏りを防ぐ
+    const pairs=q.c.map((text,i)=>({text,correct:i===q.a}));
+    curChoices=shuffle(pairs);
+    curCorrectIdx=curChoices.findIndex(p=>p.correct);
+    const lb=['A','B','C','D'];
+    document.getElementById('quiz-choices').className='choices';
+    document.getElementById('quiz-choices').innerHTML=curChoices.map((p,i)=>`<button class="choice-btn" onclick="answer4(${i})"><span class="choice-label">${lb[i]}</span>${p.text}</button>`).join('');
+  }else{
+    document.getElementById('quiz-type-badge').textContent='○×';
+    document.getElementById('quiz-type-badge').className='quiz-type-badge type-ox';
+    document.getElementById('quiz-q').innerHTML=q.q;
+    document.getElementById('quiz-choices').className='';
+    document.getElementById('quiz-choices').innerHTML=`<div class="ox-choices"><button class="ox-btn" onclick="answerOX(true)">⭕<span>正しい</span></button><button class="ox-btn" onclick="answerOX(false)">❌<span>誤り</span></button></div>`;
+  }
+}
+function answer4(idx){if(answered)return;answered=true;const q=questions[qIndex];const btns=document.querySelectorAll('.choice-btn');btns.forEach(b=>b.disabled=true);btns[curCorrectIdx].classList.add('correct');if(idx!==curCorrectIdx)btns[idx].classList.add('wrong');processAnswer(idx===curCorrectIdx,curChoices[curCorrectIdx].text,q.q,q.m);}
+function answerOX(val){if(answered)return;answered=true;const q=questions[qIndex];const btns=document.querySelectorAll('.ox-btn');btns.forEach(b=>b.disabled=true);btns[q.a?0:1].classList.add('correct');if(val!==q.a)btns[val?0:1].classList.add('wrong');processAnswer(val===q.a,q.a?'○（正しい）':'×（誤り）',q.q,q.m);}
+function processAnswer(isCorrect,correctAns,qText,mean){
+  const fb=document.getElementById('feedback-bar');
+  const meanHtml=mean?`<span class="feedback-mean">💡 ${mean}</span>`:'';
+  if(isCorrect){score+=10;correctCount++;timeLeft=Math.min(timeLeft+5,999);fb.innerHTML='✅ 正解！ ＋5秒'+meanHtml;fb.className='feedback-bar ok show';}
+  else{wrongCount++;timeLeft=Math.max(timeLeft-5,0);fb.innerHTML=`❌ 正解は「${correctAns}」（−5秒）`+meanHtml;fb.className='feedback-bar ng show';wrongAnswers.push({q:qText,a:correctAns,m:mean||''});}
+  updateTimerDisplay();document.getElementById('next-btn').className='next-btn show';
+}
+function nextQuestion(){qIndex++;if(qIndex>=10){clearInterval(timer);endGame();}else{showQuestion();}}
+function endGame(){
+  clearInterval(timer);
+  const bonus=Math.max(timeLeft,0),total=score+bonus;
+  const medal=correctCount>=9?'🥇':correctCount>=7?'🥈':correctCount>=5?'🥉':'😅';
+  document.getElementById('result-genre').textContent=currentGenre.icon+' '+currentGenre.name;
+  document.getElementById('result-score').textContent=total;
+  document.getElementById('result-medal').textContent=medal;
+  document.getElementById('result-correct').textContent=correctCount;
+  document.getElementById('result-wrong').textContent=wrongCount;
+  document.getElementById('result-bonus').textContent='+'+bonus;
+  const ws=document.getElementById('wrong-section');
+  if(wrongAnswers.length>0){ws.innerHTML=`<div class="wrong-label">// ❌ 間違えた問題（${wrongAnswers.length}問）</div>`+wrongAnswers.map((w,i)=>`<div class="wrong-item"><div class="wrong-item-num">問${i+1}</div><div class="wrong-item-q">${w.q}</div><div class="wrong-item-ans"><span class="wrong-item-ans-label">正解</span><span class="wrong-item-ans-text">${w.a}</span></div>${w.m?`<div class="wrong-item-mean">💡 ${w.m}</div>`:''}</div>`).join('');}
+  else{ws.innerHTML='<div style="text-align:center;padding:20px;font-family:\'Share Tech Mono\',monospace;font-size:12px;color:var(--gold3);">🎉 全問正解！おみごと！</div>';}
+  saveRanking(currentGenre.id,playerName,total,correctCount);
+  if(window.TomyStamp&&playerName!=='ゲスト'){TomyStamp.send('kotowaza-quiz',currentGenre.name,correctCount).then(r=>{if(r&&r.ok)showToast('⭐ スタンプ獲得！ランキングに反映されます');});}
+  showScreen('screen-result');
+}
+const LS_KEY='kotowaza_quiz_ranking';
+function saveRanking(gId,name,sc,correct){const data=JSON.parse(localStorage.getItem(LS_KEY)||'{}');if(!data[gId])data[gId]=[];data[gId].push({name,score:sc,correct,date:new Date().toLocaleDateString('ja-JP')});data[gId].sort((a,b)=>b.score-a.score);data[gId]=data[gId].slice(0,20);localStorage.setItem(LS_KEY,JSON.stringify(data));}
+function showRanking(){const tabs=document.getElementById('ranking-tabs');tabs.innerHTML=GENRES.map(g=>`<button class="ranking-tab" onclick="switchRankingTab('${g.id}',this)">${g.icon} ${g.name}</button>`).join('');showScreen('screen-ranking');switchRankingTab(GENRES[0].id,tabs.querySelector('.ranking-tab'));}
+function switchRankingTab(id,btn){document.querySelectorAll('.ranking-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');currentRankingGenre=id;renderRanking(id);}
+function renderRanking(id){const data=JSON.parse(localStorage.getItem(LS_KEY)||'{}');const rows=data[id]||[];const list=document.getElementById('ranking-list');if(!rows.length){list.innerHTML='<div class="ranking-empty">// まだ記録がありません</div>';return;}list.innerHTML=rows.map((r,i)=>{const pos=i+1,pc=pos===1?'gold':pos===2?'silver':pos===3?'bronze':'';const rc=pos===1?'top1':pos===2?'top2':pos===3?'top3':'';return `<div class="ranking-row ${rc}"><span class="ranking-pos ${pc}">${pos}</span><span class="ranking-name">${r.name}</span><span style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);">${r.correct}/10</span><span class="ranking-score">${r.score}</span><span class="ranking-date">${r.date}</span></div>`;}).join('');}
+function deleteRanking(){if(!currentRankingGenre)return;if(!confirm(`「${GENRES.find(g=>g.id===currentRankingGenre)?.name}」の記録を削除しますか？`))return;const data=JSON.parse(localStorage.getItem(LS_KEY)||'{}');delete data[currentRankingGenre];localStorage.setItem(LS_KEY,JSON.stringify(data));renderRanking(currentRankingGenre);}
+buildGenreCards();
+</script>
+</body>
+</html>
