@@ -170,6 +170,39 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .portal-fixed-btn:hover{background:rgba(19,17,13,0.98);border-color:rgba(201,162,39,0.7);transform:translateY(-1px);}
 @media(max-width:480px){.genres-grid{grid-template-columns:1fr 1fr;}.result-actions{flex-direction:column;}.portal-fixed-btn{bottom:14px;left:14px;padding:8px 14px;font-size:11px;}.quiz-header{padding:12px 14px;gap:10px;}.quiz-body{padding:24px 16px 40px;}.quiz-timer{font-size:20px;}}
 @media(max-width:360px){.genres-grid{grid-template-columns:1fr;}.ox-btn{padding:22px 10px;font-size:32px;}.quiz-header{gap:8px;}}
+/* ===== 早押し: タイプライター & バザー ===== */
+.cursor-blink{display:inline-block;width:3px;height:1.05em;background:var(--gold3);vertical-align:text-bottom;margin-left:2px;animation:caret 0.6s ease-in-out infinite;}
+@keyframes caret{0%,100%{opacity:1;}50%{opacity:0;}}
+.quiz-q{min-height:90px;}
+.buzzer-btn{margin-top:8px;width:100%;padding:18px;border:none;border-radius:8px;font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:18px;letter-spacing:0.05em;color:#fff;cursor:pointer;background:linear-gradient(90deg,var(--crimson),var(--red2));box-shadow:0 6px 24px rgba(192,57,43,0.4);animation:buzz 1s ease-in-out infinite;transition:transform 0.1s;}
+.buzzer-btn:active{transform:scale(0.96);animation:none;}
+@keyframes buzz{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+
+/* ===== 早押し: 正誤オーバーレイ ===== */
+.result-overlay{display:none;position:fixed;inset:0;z-index:9990;justify-content:center;align-items:center;padding:20px;}
+.result-overlay.show{display:flex;}
+.result-overlay::before{content:'';position:absolute;inset:0;background:rgba(10,8,4,0.86);backdrop-filter:blur(4px);}
+.result-box-ov{position:relative;z-index:1;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:30px 26px;max-width:430px;width:100%;text-align:center;animation:popIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275);max-height:88vh;overflow-y:auto;}
+.result-box-ov.correct{border-color:var(--green);box-shadow:0 0 40px rgba(63,174,122,0.3);}
+.result-box-ov.incorrect{border-color:var(--crimson);box-shadow:0 0 40px rgba(217,83,63,0.3);}
+@keyframes popIn{from{transform:scale(0.6);opacity:0;}50%{transform:scale(1.08);}to{transform:scale(1);opacity:1;}}
+.result-emoji{font-size:50px;margin-bottom:6px;}
+.result-label-ov{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:25px;margin-bottom:14px;}
+.result-box-ov.correct .result-label-ov{color:#7ed3a8;}
+.result-box-ov.incorrect .result-label-ov{color:#f0958e;}
+.result-ans-show{background:var(--bg2);border-radius:10px;padding:14px;margin-bottom:12px;text-align:left;}
+.result-ans-q{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:8px;}
+.result-ans-q .koto{font-family:'Shippori Mincho',serif;font-weight:800;color:var(--gold3);letter-spacing:0.08em;}
+.result-ans-a{font-size:18px;font-weight:900;color:var(--gold3);font-family:'Shippori Mincho',serif;}
+.result-feedback{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:10px;}
+.result-feedback .hl{font-weight:900;}
+.result-feedback .hl.plus{color:#7ed3a8;}
+.result-feedback .hl.minus{color:#f0958e;}
+.result-mean{font-size:12.5px;color:var(--text2);line-height:1.7;background:rgba(201,162,39,0.08);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:20px;text-align:left;}
+.result-mean:empty{display:none;}
+#ov-next-btn{margin-top:0;}
+#toast.ok{border-color:var(--green);color:#9be3bf;}
+#toast.ng{border-color:var(--crimson);color:#f0958e;}
 </style>
 </head>
 <body>
@@ -178,7 +211,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="top-eyebrow">Tommy's Quiz Dojo</div>
     <h1 class="top-title">故事・ことわざ<span>クイズ</span>道場</h1>
     <p class="top-sub">意味あて・穴埋め・由来・正誤…遊びながらことわざ・故事成語の達人へ！</p>
-    <div class="top-rule">📋 制限時間：<strong>120秒</strong> ／ 各ジャンル<strong>10問</strong>ランダム出題<br>✅ 正解 → <strong>+10点</strong> ＋ 時間+5秒<br>❌ 不正解 → 減点なし ＋ 時間−5秒のペナルティ<br>🏆 残り時間がそのままボーナス点に加算！<br>👆 ジャンルカードをクリックで<strong>即スタート</strong>（名前入力は任意）<br>【4択】と【○×】がランダムにミックスされます</div>
+    <div class="top-rule">📋 制限時間：<strong>120秒</strong> ／ 各ジャンル<strong>10問</strong>ランダム出題<br>✅ 正解 → <strong>+10点</strong> ＋ 時間+5秒<br>❌ 不正解 → 減点なし ＋ 時間−5秒のペナルティ<br>🏆 残り時間がそのままボーナス点に加算！<br>⚡ 問題が流れたら「回答する！」を押して選択肢を表示<br>👆 ジャンルカードをクリックで<strong>即スタート</strong>（名前入力は任意）<br>【4択】と【○×】がランダムにミックスされます</div>
   </div>
   <div class="genres-wrap">
     <div class="genres-label">// ジャンルを選んでクリック → 即スタート</div>
@@ -192,7 +225,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <span class="intro-icon" id="intro-icon"></span>
     <div class="intro-name" id="intro-name"></div>
     <div class="intro-desc" id="intro-desc"></div>
-    <div class="intro-rule">制限時間：<strong>120秒</strong> ／ 10問ランダム出題（4択＋○×ミックス）<br>✅ 正解 → <strong>+10点</strong> ＋ 時間+5秒<br>❌ 不正解 → 減点なし ＋ 時間−5秒<br>🏆 残り時間がそのままボーナス点に加算</div>
+    <div class="intro-rule">制限時間：<strong>120秒</strong> ／ 10問ランダム出題（4択＋○×ミックス）<br>✅ 正解 → <strong>+10点</strong> ＋ 時間+5秒<br>❌ 不正解 → 減点なし ＋ 時間−5秒<br>🏆 残り時間がそのままボーナス点に加算<br>⚡ 問題が流れたら「回答する！」で選択肢が出ます</div>
     <div class="name-label">// Your Name（ランキングに表示）</div>
     <input class="name-input" id="name-input" type="text" maxlength="20" placeholder="プレーヤー名（任意）">
     <button class="start-btn" onclick="startGame()">スタート ▶</button>
@@ -208,10 +241,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </div>
   <div class="quiz-body">
     <div class="quiz-type-badge" id="quiz-type-badge">4択</div>
-    <div class="quiz-q" id="quiz-q"></div>
-    <div id="quiz-choices"></div>
-    <div class="feedback-bar" id="feedback-bar"></div>
-    <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題へ →</button>
+    <div class="quiz-q" id="quiz-q"><span class="cursor-blink"></span></div>
+    <div id="quiz-choices" style="display:none;"></div>
+    <button class="buzzer-btn" id="buzzer-btn" onclick="onBuzzer()">⚡ 回答する！</button>
   </div>
 </div>
 <div id="screen-result" class="screen">
@@ -243,6 +275,20 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div style="text-align:center;margin-top:16px;"><button class="ranking-del" onclick="deleteRanking()">🗑️ このジャンルの記録を削除</button></div>
   </div>
 </div>
+<div class="result-overlay" id="result-overlay">
+  <div class="result-box-ov" id="result-box-ov">
+    <div class="result-emoji" id="result-emoji">✅</div>
+    <div class="result-label-ov" id="result-label-ov">正解！</div>
+    <div class="result-ans-show">
+      <div class="result-ans-q" id="result-ov-q"></div>
+      <div class="result-ans-a" id="result-ov-a"></div>
+    </div>
+    <div class="result-feedback" id="result-ov-fb"></div>
+    <div class="result-mean" id="result-ov-mean"></div>
+    <button class="start-btn" id="ov-next-btn" onclick="nextQuestion()">次の問題へ →</button>
+  </div>
+</div>
+
 <div id="toast"></div>
 <a class="portal-fixed-btn" href="https://pecpec37-gift.github.io/portal/">← ポータルサイトに戻る</a>
 <script>
@@ -436,9 +482,15 @@ let currentGenre=null,questions=[],qIndex=0,score=0,correctCount=0,wrongCount=0;
 let timeLeft=120,timer=null,answered=false,wrongAnswers=[],playerName='';
 let currentRankingGenre=null;
 let curChoices=[],curCorrectIdx=-1;
+let typingTimeout=null,displayedText='',answerPhase=false;
+const TYPING_SPEED=90; // 問題文の表示スピード（1文字あたりミリ秒。大きいほど遅い）
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function stripHtml(s){return String(s).replace(/<[^>]*>/g,'');}
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
-function showToast(msg,d=2500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d);}
+let toastTimer=null;
+function showToast(msg,type='',d=4500){const t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' '+type:'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>hideToast(),d);}
+function hideToast(){clearTimeout(toastTimer);const t=document.getElementById('toast');if(t)t.className='';}
 function buildGenreCards(){
   const grid=document.getElementById('genres-grid');
   grid.innerHTML=GENRES.map(g=>`<div class="genre-card" onclick="selectGenre('${g.id}')"><div class="genre-accent" style="background:${g.color};"></div><span class="genre-icon">${g.icon}</span><div class="genre-name">${g.name}</div><div class="genre-desc">${g.desc}</div><div class="genre-count">全${DB[g.id].length}問収録 ／ 10問ランダム出題</div><span class="genre-start">▶ START</span></div>`).join('');
@@ -462,44 +514,130 @@ function retryGame(){showScreen('screen-intro');}
 function startTimer(){clearInterval(timer);timeLeft=120;updateTimerDisplay();timer=setInterval(()=>{timeLeft--;updateTimerDisplay();if(timeLeft<=0){clearInterval(timer);endGame();}},1000);}
 function updateTimerDisplay(){const el=document.getElementById('quiz-timer');el.textContent=timeLeft;el.className='quiz-timer'+(timeLeft<=10?' danger':'');}
 function showQuestion(){
-  const q=questions[qIndex];answered=false;
+  const q=questions[qIndex];answered=false;answerPhase=false;
   document.getElementById('quiz-qnum').textContent=`Q${qIndex+1} / 10`;
   document.getElementById('quiz-progress-fill').style.width=`${(qIndex/10)*100}%`;
   document.getElementById('quiz-score').textContent=`${score} pt`;
-  document.getElementById('feedback-bar').className='feedback-bar';
-  document.getElementById('feedback-bar').innerHTML='';
-  document.getElementById('next-btn').className='next-btn';
+  document.getElementById('result-overlay').classList.remove('show');
+
+  const badge=document.getElementById('quiz-type-badge');
+  if(q.type==='4'){badge.textContent='4択';badge.className='quiz-type-badge type-4';}
+  else{badge.textContent='○×';badge.className='quiz-type-badge type-ox';}
+
+  // 選択肢は隠す・バザーボタンを出す
+  const choices=document.getElementById('quiz-choices');
+  choices.style.display='none';choices.innerHTML='';choices.className=(q.type==='4'?'choices':'');
+  const buzzer=document.getElementById('buzzer-btn');
+  buzzer.style.display='block';buzzer.disabled=false;
+
+  // 問題文タイプライター開始
+  const el=document.getElementById('quiz-q');
+  el.style.transition='none';el.style.visibility='visible';el.style.opacity='1';
+  typeQuestion(q.q,el);
+}
+
+// タイプライター表示（問題文はHTMLを含むため、表示中はプレーンテキストを流し、完了時にスタイル付きで表示）
+function typeQuestion(html,el){
+  if(typingTimeout)clearTimeout(typingTimeout);
+  const plain=stripHtml(html);
+  displayedText='';let i=0;
+  (function next(){
+    if(i<plain.length){
+      displayedText+=plain[i++];
+      el.innerHTML=escapeHtml(displayedText)+'<span class="cursor-blink"></span>';
+      typingTimeout=setTimeout(next,TYPING_SPEED);
+    }else{
+      el.innerHTML=html;
+    }
+  })();
+}
+
+// 「回答する！」押下 → タイプライター停止 → 問題文フェードアウト → 選択肢表示
+function onBuzzer(){
+  if(answerPhase)return;answerPhase=true;
+  if(typingTimeout)clearTimeout(typingTimeout);
+  const el=document.getElementById('quiz-q');
+  el.style.transition='opacity 0.2s ease';
+  el.style.opacity='0';el.style.visibility='hidden';
+  document.getElementById('buzzer-btn').style.display='none';
+  renderChoices(questions[qIndex]);
+}
+
+function renderChoices(q){
+  const wrap=document.getElementById('quiz-choices');
+  wrap.style.display='block';
   if(q.type==='4'){
-    document.getElementById('quiz-type-badge').textContent='4択';
-    document.getElementById('quiz-type-badge').className='quiz-type-badge type-4';
-    document.getElementById('quiz-q').innerHTML=q.q;
-    // 選択肢をシャッフルして正解位置の偏りを防ぐ
+    wrap.className='choices';
+    // 表示時に選択肢の順番をシャッフルして正解位置の偏りを防ぐ
     const pairs=q.c.map((text,i)=>({text,correct:i===q.a}));
     curChoices=shuffle(pairs);
     curCorrectIdx=curChoices.findIndex(p=>p.correct);
     const lb=['A','B','C','D'];
-    document.getElementById('quiz-choices').className='choices';
-    document.getElementById('quiz-choices').innerHTML=curChoices.map((p,i)=>`<button class="choice-btn" onclick="answer4(${i})"><span class="choice-label">${lb[i]}</span>${p.text}</button>`).join('');
+    wrap.innerHTML=curChoices.map((p,i)=>`<button class="choice-btn" onclick="answer4(${i})"><span class="choice-label">${lb[i]}</span>${escapeHtml(p.text)}</button>`).join('');
   }else{
-    document.getElementById('quiz-type-badge').textContent='○×';
-    document.getElementById('quiz-type-badge').className='quiz-type-badge type-ox';
-    document.getElementById('quiz-q').innerHTML=q.q;
-    document.getElementById('quiz-choices').className='';
-    document.getElementById('quiz-choices').innerHTML=`<div class="ox-choices"><button class="ox-btn" onclick="answerOX(true)">⭕<span>正しい</span></button><button class="ox-btn" onclick="answerOX(false)">❌<span>誤り</span></button></div>`;
+    wrap.className='';
+    wrap.innerHTML=`<div class="ox-choices"><button class="ox-btn" onclick="answerOX(true)">⭕<span>正しい</span></button><button class="ox-btn" onclick="answerOX(false)">❌<span>誤り</span></button></div>`;
   }
 }
-function answer4(idx){if(answered)return;answered=true;const q=questions[qIndex];const btns=document.querySelectorAll('.choice-btn');btns.forEach(b=>b.disabled=true);btns[curCorrectIdx].classList.add('correct');if(idx!==curCorrectIdx)btns[idx].classList.add('wrong');processAnswer(idx===curCorrectIdx,curChoices[curCorrectIdx].text,q.q,q.m);}
-function answerOX(val){if(answered)return;answered=true;const q=questions[qIndex];const btns=document.querySelectorAll('.ox-btn');btns.forEach(b=>b.disabled=true);btns[q.a?0:1].classList.add('correct');if(val!==q.a)btns[val?0:1].classList.add('wrong');processAnswer(val===q.a,q.a?'○（正しい）':'×（誤り）',q.q,q.m);}
-function processAnswer(isCorrect,correctAns,qText,mean){
-  const fb=document.getElementById('feedback-bar');
-  const meanHtml=mean?`<span class="feedback-mean">💡 ${mean}</span>`:'';
-  if(isCorrect){score+=10;correctCount++;timeLeft=Math.min(timeLeft+5,999);fb.innerHTML='✅ 正解！ ＋5秒'+meanHtml;fb.className='feedback-bar ok show';}
-  else{wrongCount++;timeLeft=Math.max(timeLeft-5,0);fb.innerHTML=`❌ 正解は「${correctAns}」（−5秒）`+meanHtml;fb.className='feedback-bar ng show';wrongAnswers.push({q:qText,a:correctAns,m:mean||''});}
-  updateTimerDisplay();document.getElementById('next-btn').className='next-btn show';
+
+// 選択後：問題文を全文（スタイル付きHTML）でフェードインして再表示
+function revealQuestion(html){
+  const el=document.getElementById('quiz-q');
+  el.innerHTML=html;
+  el.style.transition='opacity 0.3s ease';
+  el.style.visibility='visible';
+  el.style.opacity='1';
 }
-function nextQuestion(){qIndex++;if(qIndex>=10){clearInterval(timer);endGame();}else{showQuestion();}}
+function answer4(idx){
+  if(answered)return;answered=true;
+  const q=questions[qIndex];
+  const btns=document.querySelectorAll('.choice-btn');
+  btns.forEach(b=>b.disabled=true);
+  btns[curCorrectIdx].classList.add('correct');
+  if(idx!==curCorrectIdx)btns[idx].classList.add('wrong');
+  revealQuestion(q.q);
+  const isCorrect=idx===curCorrectIdx;
+  const correctAns=curChoices[curCorrectIdx].text;
+  const userAns=curChoices[idx].text;
+  setTimeout(()=>showResult(isCorrect,correctAns,userAns,q.q,q.m),600);
+}
+function answerOX(val){
+  if(answered)return;answered=true;
+  const q=questions[qIndex];
+  const btns=document.querySelectorAll('.ox-btn');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.a?0:1].classList.add('correct');
+  if(val!==q.a)btns[val?0:1].classList.add('wrong');
+  revealQuestion(q.q);
+  const userAns=val?'○（正しい）':'×（誤り）';
+  setTimeout(()=>showResult(val===q.a,q.a?'○（正しい）':'×（誤り）',userAns,q.q,q.m),600);
+}
+function showResult(isCorrect,correctAns,userAns,qHtml,mean){
+  if(isCorrect){score+=10;correctCount++;timeLeft=Math.min(timeLeft+5,999);}
+  else{wrongCount++;timeLeft=Math.max(timeLeft-5,0);wrongAnswers.push({q:qHtml,a:correctAns,m:mean||''});}
+  updateTimerDisplay();
+  document.getElementById('quiz-score').textContent=`${score} pt`;
+  const box=document.getElementById('result-box-ov');
+  box.className='result-box-ov '+(isCorrect?'correct':'incorrect');
+  document.getElementById('result-emoji').textContent=isCorrect?'✅':'❌';
+  document.getElementById('result-label-ov').textContent=isCorrect?'正解！':'不正解...';
+  document.getElementById('result-ov-q').innerHTML=qHtml;
+  document.getElementById('result-ov-a').textContent=correctAns;
+  if(isCorrect){
+    document.getElementById('result-ov-fb').innerHTML='<span class="hl plus">+10点</span>　<span class="hl plus">残り時間 +5秒！</span>';
+    showToast('✅ 正解！ +10点 +5秒','ok');
+  }else{
+    document.getElementById('result-ov-fb').innerHTML=`あなたの回答：「${escapeHtml(userAns)}」　<span class="hl minus">（−5秒）</span>`;
+    showToast('❌ 不正解 −5秒','ng');
+  }
+  document.getElementById('result-ov-mean').innerHTML=mean?('💡 '+escapeHtml(mean)):'';
+  document.getElementById('result-overlay').classList.add('show');
+}
+function nextQuestion(){document.getElementById('result-overlay').classList.remove('show');hideToast();qIndex++;if(qIndex>=10){clearInterval(timer);endGame();}else{showQuestion();}}
 function endGame(){
   clearInterval(timer);
+  if(typingTimeout)clearTimeout(typingTimeout);
+  document.getElementById('result-overlay').classList.remove('show');
   const bonus=Math.max(timeLeft,0),total=score+bonus;
   const medal=correctCount>=9?'🥇':correctCount>=7?'🥈':correctCount>=5?'🥉':'😅';
   document.getElementById('result-genre').textContent=currentGenre.icon+' '+currentGenre.name;
