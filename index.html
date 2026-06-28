@@ -74,6 +74,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .quiz-progress{flex:1;height:3px;background:rgba(201,162,39,0.15);border-radius:2px;overflow:hidden;min-width:30px;}
 .quiz-progress-fill{height:100%;background:linear-gradient(90deg,var(--red2),var(--gold2));border-radius:2px;transition:width 0.3s;}
 .quiz-qnum{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);white-space:nowrap;letter-spacing:0.08em;}
+.quiz-top-btn{flex-shrink:0;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0.08em;padding:6px 11px;background:none;border:1px solid var(--border);color:var(--text3);border-radius:3px;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.quiz-top-btn:hover{border-color:var(--gold3);color:var(--gold3);}
 .quiz-score{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--gold3);white-space:nowrap;}
 .quiz-timer-wrap{display:flex;align-items:center;gap:5px;}
 .quiz-timer{font-family:'Zen Kaku Gothic New',sans-serif;font-weight:900;font-size:22px;color:var(--gold3);min-width:40px;text-align:right;transition:color 0.3s;}
@@ -210,8 +212,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="top-hero">
     <div class="top-eyebrow">Tommy's Quiz Dojo</div>
     <h1 class="top-title">故事・ことわざ<span>クイズ</span>道場</h1>
-    <p class="top-sub">意味あて・穴埋め・由来・正誤…遊びながらことわざ・故事成語の達人へ！</p>
-    <div class="top-rule">📋 制限時間：<strong>120秒</strong> ／ 各ジャンル<strong>10問</strong>ランダム出題<br>✅ 正解 → <strong>+10点</strong> ＋ 時間+5秒<br>❌ 不正解 → 減点なし ＋ 時間−5秒のペナルティ<br>🏆 残り時間がそのままボーナス点に加算！<br>⚡ 問題が流れたら「回答する！」を押して選択肢を表示<br>👆 ジャンルカードをクリックで<strong>即スタート</strong>（名前入力は任意）<br>【4択】と【○×】がランダムにミックスされます</div>
+    <p class="top-sub">意味あて・穴埋め・由来…遊びながらことわざ・故事成語の達人へ！</p>
+    <div class="top-rule">📋 制限時間：<strong>60秒</strong> ／ 各ジャンル<strong>10問</strong>ランダム出題<br>✅ 正解 → <strong>+10点</strong> ＋ 時間+5秒<br>❌ 不正解 → 減点なし ＋ 時間−5秒のペナルティ<br>🏆 残り時間がそのままボーナス点に加算！<br>⚡ 問題が流れたら「回答する！」を押して選択肢を表示<br>👆 ジャンルカードをクリックで<strong>即スタート</strong>（名前入力は任意）<br>すべて<strong>4択クイズ</strong>で出題されます</div>
   </div>
   <div class="genres-wrap">
     <div class="genres-label">// ジャンルを選んでクリック → 即スタート</div>
@@ -225,7 +227,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <span class="intro-icon" id="intro-icon"></span>
     <div class="intro-name" id="intro-name"></div>
     <div class="intro-desc" id="intro-desc"></div>
-    <div class="intro-rule">制限時間：<strong>120秒</strong> ／ 10問ランダム出題（4択＋○×ミックス）<br>✅ 正解 → <strong>+10点</strong> ＋ 時間+5秒<br>❌ 不正解 → 減点なし ＋ 時間−5秒<br>🏆 残り時間がそのままボーナス点に加算<br>⚡ 問題が流れたら「回答する！」で選択肢が出ます</div>
+    <div class="intro-rule">制限時間：<strong>60秒</strong> ／ 10問ランダム出題（4択クイズ）<br>✅ 正解 → <strong>+10点</strong> ＋ 時間+5秒<br>❌ 不正解 → 減点なし ＋ 時間−5秒<br>🏆 残り時間がそのままボーナス点に加算<br>⚡ 問題が流れたら「回答する！」で選択肢が出ます</div>
     <div class="name-label">// Your Name（ランキングに表示）</div>
     <input class="name-input" id="name-input" type="text" maxlength="20" placeholder="プレーヤー名（任意）">
     <button class="start-btn" onclick="startGame()">スタート ▶</button>
@@ -234,10 +236,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 </div>
 <div id="screen-quiz" class="screen">
   <div class="quiz-header">
+    <button class="quiz-top-btn" onclick="quizToTop()">⌂ TOPに戻る</button>
     <div class="quiz-qnum" id="quiz-qnum">Q1 / 10</div>
     <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-progress-fill" style="width:0%"></div></div>
     <div class="quiz-score" id="quiz-score">0 pt</div>
-    <div class="quiz-timer-wrap"><div class="quiz-timer" id="quiz-timer">120</div><div class="quiz-timer-label">秒</div></div>
+    <div class="quiz-timer-wrap"><div class="quiz-timer" id="quiz-timer">60</div><div class="quiz-timer-label">秒</div></div>
   </div>
   <div class="quiz-body">
     <div class="quiz-type-badge" id="quiz-type-badge">4択</div>
@@ -479,7 +482,7 @@ kodai:[
 ],
 };
 let currentGenre=null,questions=[],qIndex=0,score=0,correctCount=0,wrongCount=0;
-let timeLeft=120,timer=null,answered=false,wrongAnswers=[],playerName='';
+let timeLeft=60,timer=null,answered=false,wrongAnswers=[],playerName='';
 let currentRankingGenre=null;
 let curChoices=[],curCorrectIdx=-1;
 let typingTimeout=null,displayedText='',answerPhase=false;
@@ -493,7 +496,7 @@ function showToast(msg,type='',d=4500){const t=document.getElementById('toast');
 function hideToast(){clearTimeout(toastTimer);const t=document.getElementById('toast');if(t)t.className='';}
 function buildGenreCards(){
   const grid=document.getElementById('genres-grid');
-  grid.innerHTML=GENRES.map(g=>`<div class="genre-card" onclick="selectGenre('${g.id}')"><div class="genre-accent" style="background:${g.color};"></div><span class="genre-icon">${g.icon}</span><div class="genre-name">${g.name}</div><div class="genre-desc">${g.desc}</div><div class="genre-count">全${DB[g.id].length}問収録 ／ 10問ランダム出題</div><span class="genre-start">▶ START</span></div>`).join('');
+  grid.innerHTML=GENRES.map(g=>`<div class="genre-card" onclick="selectGenre('${g.id}')"><div class="genre-accent" style="background:${g.color};"></div><span class="genre-icon">${g.icon}</span><div class="genre-name">${g.name}</div><div class="genre-desc">${g.desc}</div><div class="genre-count">全${DB[g.id].filter(q=>q.type==='4').length}問収録 ／ 10問ランダム出題</div><span class="genre-start">▶ START</span></div>`).join('');
 }
 function selectGenre(id){
   currentGenre=GENRES.find(g=>g.id===id);
@@ -506,12 +509,20 @@ function selectGenre(id){
 function startGame(){
   playerName=document.getElementById('name-input').value.trim()||'ゲスト';
   if(window.TomyStamp&&playerName!=='ゲスト')TomyStamp.setPlayer(playerName);
-  questions=shuffle(DB[currentGenre.id]).slice(0,10);
+  questions=shuffle(DB[currentGenre.id].filter(q=>q.type==='4')).slice(0,10);
   qIndex=0;score=0;correctCount=0;wrongCount=0;wrongAnswers=[];
   showScreen('screen-quiz');showQuestion();startTimer();
 }
 function retryGame(){showScreen('screen-intro');}
-function startTimer(){clearInterval(timer);timeLeft=120;updateTimerDisplay();timer=setInterval(()=>{timeLeft--;updateTimerDisplay();if(timeLeft<=0){clearInterval(timer);endGame();}},1000);}
+function quizToTop(){
+  if(!confirm('クイズを中断してTOPに戻りますか？（現在のスコアは記録されません）'))return;
+  clearInterval(timer);
+  if(typingTimeout)clearTimeout(typingTimeout);
+  hideToast();
+  document.getElementById('result-overlay').classList.remove('show');
+  showScreen('screen-top');
+}
+function startTimer(){clearInterval(timer);timeLeft=60;updateTimerDisplay();timer=setInterval(()=>{timeLeft--;updateTimerDisplay();if(timeLeft<=0){clearInterval(timer);endGame();}},1000);}
 function updateTimerDisplay(){const el=document.getElementById('quiz-timer');el.textContent=timeLeft;el.className='quiz-timer'+(timeLeft<=10?' danger':'');}
 function showQuestion(){
   const q=questions[qIndex];answered=false;answerPhase=false;
